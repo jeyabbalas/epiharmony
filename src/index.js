@@ -1,23 +1,9 @@
-async function loadStylesInShadow(urls, shadowRoot) {
+async function loadStylesInShadow(url, shadowRoot) {
     try {
-        // Load all stylesheets
-        const cssTexts = await Promise.all(
-            urls.map(async url => {
-                const response = await fetch(url);
-                return response.text();
-            })
-        );
-
-        // Combine all CSS into a single style element
+        const response = await fetch(url);
+        const css = await response.text();
         const style = document.createElement('style');
-        style.textContent = cssTexts
-            .map(css =>
-                // Scope styles to shadow root
-                css.replace(/html/g, ':host')
-                   .replace(/body/g, ':host')
-            )
-            .join('\n');
-
+        style.textContent = css;
         shadowRoot.appendChild(style);
     } catch (error) {
         console.error('Error loading styles:', error);
@@ -30,16 +16,13 @@ async function embedGui(divId) {
     let container = divId ? document.getElementById(divId) : document.createElement('div');
 
     if (!container.shadowRoot) {
-        container.attachShadow({ mode: 'open' });
+        container.attachShadow({mode: 'open'});
     }
 
-    const styleUrls = [
-        'https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css',
-        // 'path/to/custom.css'
-    ];
+    const tailwindUrl = 'https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css';
 
     try {
-        await loadStylesInShadow(styleUrls, container.shadowRoot);
+        await loadStylesInShadow(tailwindUrl, container.shadowRoot);
 
         const content = document.createElement('div');
         content.innerHTML = `
@@ -62,13 +45,18 @@ async function embedGui(divId) {
 
 
 function clearGui(container) {
-   try {
+    try {
+        if (!container) {
+            throw new Error('Container is required for clean up');
+        }
+
         if (container.shadowRoot) {
             while (container.shadowRoot.firstChild) {
                 container.shadowRoot.removeChild(container.shadowRoot.firstChild);
             }
         }
 
+        // Remove container only if it was dynamically created (no div ID provided)
         if (!container.id && document.body.contains(container)) {
             document.body.removeChild(container);
         }
@@ -79,4 +67,4 @@ function clearGui(container) {
 }
 
 
-export { embedGui, clearGui };
+export {embedGui, clearGui};
