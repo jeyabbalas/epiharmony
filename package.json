@@ -1,0 +1,17 @@
+{
+  "name": "@jeyabbalas/epiharmony",
+  "version": "0.0.0",
+  "description": "A simple calculator library",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeyabbalas/epiharmony.git"
+  },
+  "keywords": ["data-harmonization", "large-language-models", "javascript"],
+  "author": "Jeya Balaji Balasubramanian",
+  "license": "MIT"
+}
